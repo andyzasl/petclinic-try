@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+  - name: Init a new swarm with default parameters
+    docker_swarm:
+      state: present
+      advertise_addr: "{{ ansible_host }}"

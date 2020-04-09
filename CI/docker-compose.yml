@@ -1,0 +1,46 @@
+version: '3'
+services:
+  nexus:
+    image: sonatype/nexus3
+    ports:
+      - 5000:5000
+      - 8081:8081
+      - 9999:9999
+    volumes:
+      - /data/nexus:/nexus-data
+    restart: always
+
+  gerrit:
+    image: gerritcodereview/gerrit
+    environment:
+       - "CANONICAL_WEB_URL:http://192.168.56.4:8080"
+    volumes:
+            #        - /data/gerrit.config:/var/gerrit/etc/gerrit.config
+       - /data/gerrit/git:/var/gerrit/git
+       - /data/gerrit/index:/var/gerrit/index
+       - /data/gerrit/cache:/var/gerrit/cache
+         #       - /data/gerrit/etc:/var/gerrit/etc
+    ports:
+       - "29418:29418"
+       - "8080:8080"
+    restart: always
+
+  jenkins:
+    image: myjenkins:latest
+    environment:
+      JAVA_OPTS: "-Djava.awt.headless=true"
+    ports:
+      - "50000:50000"
+      - "8888:8080"
+    volumes:
+      - /data/jenkins:/var/jenkins_home
+    restart: always
+
+
+  docker-remote:
+    image: jarkt/docker-remote-api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 2375:2375
+    restart: always

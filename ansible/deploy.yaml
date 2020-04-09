@@ -1,0 +1,26 @@
+- hosts: '{{ target }}'
+  tasks:
+  - name: Prepare data dir
+    become: yes
+    file: 
+      path: /data/mysql
+      state: directory
+      recurse: yes
+
+  - name: Generate MySQL Root password
+    become: yes
+    shell: "date | md5sum | head -c 8 > /data/mysqlroot.pass"
+    args:
+      creates: /data/mysqlroot.pass
+
+  - name: Template a file to /tmp/petclinic.yaml
+    template:
+      src: templates/petclinic.j2
+      dest: /tmp/petclinic.yaml
+
+  - name: Deploy yaml
+    docker_stack:
+      state: present
+      name: pc
+      compose:
+        - /tmp/petclinic.yaml
