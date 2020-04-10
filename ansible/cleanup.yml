@@ -1,0 +1,6 @@
+- hosts: all
+  tasks:
+  - name: Prune everything
+    docker_prune:
+      containers: yes
+      images: yes
